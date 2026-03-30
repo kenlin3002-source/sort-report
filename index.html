@@ -68,6 +68,9 @@
             text-align: center;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         .card:hover {
             transform: translateY(-10px);
@@ -76,7 +79,12 @@
         }
         .card-icon { font-size: 3em; margin-bottom: 20px; }
         .card h2 { font-size: 1.8em; color: #00d4ff; margin-bottom: 15px; }
-        .card p { color: #b0b0b0; margin-bottom: 18px; }
+        .card p { color: #b0b0b0; margin-bottom: 18px; flex-grow: 1; }
+        .card .complexity {
+            color: #81c784;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
         .card a {
             display: inline-block;
             background: linear-gradient(135deg, #00d4ff 0%, #0096c8 100%);
@@ -86,6 +94,7 @@
             text-decoration: none;
             font-weight: bold;
             transition: all 0.3s ease;
+            margin-top: auto;
         }
         .card a:hover {
             transform: scale(1.05);
@@ -142,7 +151,7 @@
             <div class="card-icon">🫧</div>
             <h2>泡沫排序</h2>
             <p>透過相鄰元素反覆比較與交換，將較大的值慢慢推到陣列尾端。</p>
-            <p><strong>時間複雜度：</strong> O(n²)</p>
+            <div class="complexity">時間複雜度：O(n²)</div>
             <a href="bubble-sort.html">前往教學頁面</a>
         </div>
 
@@ -150,29 +159,53 @@
             <div class="card-icon">🎯</div>
             <h2>選擇排序</h2>
             <p>每一輪找出未排序區間中的最小值，再放到正確位置。</p>
-            <p><strong>時間複雜度：</strong> O(n²)</p>
+            <div class="complexity">時間複雜度：O(n²)</div>
             <a href="select-sort.html">前往教學頁面</a>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🃏</div>
+            <h2>插入排序</h2>
+            <p>將未排序的元素逐一插入到已排序區間的正確位置，如同打撲克牌時整理手牌。</p>
+            <div class="complexity">時間複雜度：O(n²)</div>
+            <a href="insertion-sort.html">前往教學頁面</a>
         </div>
 
         <div class="card">
             <div class="card-icon">🧩</div>
             <h2>合併排序</h2>
             <p>先把問題拆成更小的子陣列，再逐步合併成有序結果，體驗分治法的思路。</p>
-            <p><strong>時間複雜度：</strong> O(n log n)</p>
+            <div class="complexity">時間複雜度：O(n log n)</div>
             <a href="merge-sort.html">前往教學頁面</a>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🌲</div>
+            <h2>堆積排序</h2>
+            <p>利用完全二元樹（Max Heap）的特性，每次取出最大值放到陣列尾端，空間複雜度極佳。</p>
+            <div class="complexity">時間複雜度：O(n log n)</div>
+            <a href="heap-sort.html">前往教學頁面</a>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">⚡</div>
+            <h2>快速排序</h2>
+            <p>選定一個基準值 (Pivot)，將陣列分為大於與小於兩半，遞迴處理，實務上最常用的排序法之一。</p>
+            <div class="complexity">時間複雜度：O(n log n)</div>
+            <a href="quick-sort.html">前往教學頁面</a>
         </div>
     </section>
 
     <section class="about" id="about">
         <div class="about-box">
             <h2>這個網站能做什麼？</h2>
-            <p>每個排序頁面都提供輸入框、步驟切換、程式碼高亮與複雜度說明，方便拿來上課展示或自行練習。</p>
+            <p>每個排序頁面都提供輸入框、步驟切換、程式碼高亮與複雜度說明，方便拿來上課展示或自行練習。透過互動式圖表，讓你不再只是死背程式碼，而是真正理解資料流動的過程！</p>
         </div>
     </section>
 
     <footer>
         <p>&copy; 2026 排序演算法教學網站</p>
-        <p>包含泡沫排序、選擇排序與合併排序示範</p>
+        <p>包含泡沫、選擇、插入、合併、堆積與快速排序等 6 種經典排序演算法</p>
     </footer>
 </body>
 </html>
