@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速排序 - 程式教學</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', 微軟正黑體, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            border-bottom: 3px solid #00d4ff;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #00d4ff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .subtitle {
+            color: #b0b0b0;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: rgba(30, 30, 50, 0.8);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            border-left: 4px solid #00d4ff;
+            padding-left: 15px;
+        }
+
+        h3 {
+            color: #64b5f6;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .demo-section {
+            background: rgba(30, 30, 50, 0.8);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 4px solid #00d4ff;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .code-line {
+            display: block;
+            padding: 4px 0;
+            color: #64b5f6;
+            transition: all 0.2s ease;
+            position: relative;
+            padding-left: 10px;
+        }
+
+        .code-line.highlight {
+            background: rgba(255, 212, 0, 0.2);
+            color: #ffd700;
+            padding-left: 5px;
+            border-left: 3px solid #ffd700;
+            font-weight: bold;
+        }
+
+        .code-block code {
+            color: #64b5f6;
+        }
+
+        .highlight {
+            color: #ffd700;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        input {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.5);
+            border-radius: 5px;
+            color: #e0e0e0;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #00d4ff;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        input::placeholder {
+            color: #808080;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0084ff 100%);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: linear-gradient(135deg, #666 0%, #555 100%);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+            opacity: 0.6;
+        }
+
+        .language-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .language-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #b0b0b0;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .language-btn.active {
+            background: linear-gradient(135deg, #00d4ff 0%, #0084ff 100%);
+            color: white;
+            border-color: #00d4ff;
+        }
+
+        .language-btn:hover {
+            border-color: #00d4ff;
+        }
+
+        .visualization {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 5px;
+            height: 250px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(180deg, #00d4ff 0%, #0084ff 100%);
+            border-radius: 3px 3px 0 0;
+            transition: all 0.3s ease;
+            position: relative;
+            min-width: 30px;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            font-size: 0.7em;
+            color: white;
+            padding-bottom: 5px;
+        }
+
+        /* 快速排序專用狀態色 */
+        .bar.pivot {
+            background: linear-gradient(180deg, #9c27b0 0%, #6a1b9a 100%);
+            box-shadow: 0 0 10px rgba(156, 39, 176, 0.5);
+        }
+
+        .bar.sorted {
+            background: linear-gradient(180deg, #4caf50 0%, #2e7d32 100%);
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .bar.comparing {
+            background: linear-gradient(180deg, #ffc107 0%, #ff9800 100%);
+            box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+        }
+
+        .bar.selected {
+            background: linear-gradient(180deg, #ff5252 0%, #d32f2f 100%);
+            box-shadow: 0 0 10px rgba(255, 82, 82, 0.5);
+        }
+
+        .bar.inactive {
+            opacity: 0.3;
+            background: linear-gradient(180deg, #666 0%, #444 100%);
+            box-shadow: none;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .step-info {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+        }
+
+        .step-title {
+            color: #00d4ff;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            color: #b0b0b0;
+            margin-bottom: 8px;
+        }
+
+        .step-details {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #64b5f6;
+        }
+
+        .step-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .step-counter {
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 5px;
+            padding: 10px 15px;
+            color: #00d4ff;
+            font-weight: bold;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .result-box {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .result-box.error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.5);
+        }
+
+        .result-box.error p {
+            color: #ff6b6b;
+        }
+
+        .result-box p {
+            color: #81c784;
+        }
+
+        .complexity-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .complexity-item {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .complexity-item-label {
+            color: #64b5f6;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .complexity-item-value {
+            color: #ffd700;
+            font-size: 1.5em;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        @media (max-width: 1200px) {
+            .main-layout { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .visualization { height: 200px; }
+            .input-group { flex-direction: column; }
+            input { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ 快速排序 (Quick Sort)</h1>
+            <p class="subtitle">實務上最常使用的分治法演算法，平均速度極快</p>
+        </header>
+
+        <div class="demo-section">
+            <h2>🎮 交互式演示</h2>
+            
+            <div class="input-group">
+                <input type="text" id="arrayInput" placeholder="輸入數字，用逗號分隔 (例: 8,3,1,7,0,10,2)" value="8,3,1,7,0,10,2">
+            </div>
+
+            <div class="controls">
+                <button onclick="startDemo()">開始演示</button>
+                <button onclick="resetDemo()">重置</button>
+            </div>
+
+            <div class="visualization" id="visualization"></div>
+
+            <div class="step-info" id="stepInfo" style="display:none;">
+                <div class="step-title" id="stepTitle"></div>
+                <div class="step-description" id="stepDescription"></div>
+                <div class="step-details" id="stepDetails"></div>
+            </div>
+
+            <div class="step-controls">
+                <button id="prevBtn" onclick="previousStep()" style="display:none;">⬅️ 上一步</button>
+                <div class="step-counter" id="stepCounter" style="display:none;">第 <span id="currentStep">0</span> / <span id="totalSteps">0</span> 步</div>
+                <button id="nextBtn" onclick="nextStep()" style="display:none;">下一步 ➡️</button>
+            </div>
+
+            <div class="result-box" id="resultBox">
+                <p id="resultText"></p>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <div class="card">
+                <h2>📚 演算法概念</h2>
+                <p>快速排序是基於<strong>分而治之 (Divide and Conquer)</strong> 的演算法。核心是「分割 (Partition)」操作：</p>
+                <ul style="margin: 15px 0 15px 25px; color: #e0e0e0;">
+                    <li><strong style="color:#9c27b0;">選擇基準 (Pivot)：</strong>從陣列中挑選一個元素作為基準值 (通常選最後一個)。</li>
+                    <li><strong style="color:#ffc107;">分割 (Partition)：</strong>重新排列陣列，讓所有比 Pivot 小的元素移到其左邊，比 Pivot 大的元素移到右邊。此時 Pivot 就會處於最終正確的位置！</li>
+                    <li><strong style="color:#00d4ff;">遞迴 (Recursion)：</strong>分別對 Pivot 左邊和右邊的子陣列重複上述步驟，直到整個陣列排序完成。</li>
+                </ul>
+                <div style="background: rgba(76, 175, 80, 0.1); border-left: 4px solid #4caf50; padding: 15px; border-radius: 5px; color: #81c784;">
+                    💡 <strong>特點：</strong> In-place 排序，不需要額外的大量記憶體空間（除了遞迴呼叫的堆疊空間）。在多數情況下，它是執行速度最快的排序演算法之一。
+                </div>
+
+                <h3 style="margin-top: 25px;">⏱️ 複雜度分析</h3>
+                <div class="complexity-info">
+                    <div class="complexity-item">
+                        <div class="complexity-item-label">平均時間複雜度</div>
+                        <div class="complexity-item-value">O(n log n)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-item-label">最壞時間複雜度</div>
+                        <div class="complexity-item-value">O(n²)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💻 程式碼對應</h2>
+                
+                <div class="language-selector">
+                    <button class="language-btn active" onclick="switchLanguage('js')">JavaScript</button>
+                    <button class="language-btn" onclick="switchLanguage('py')">Python</button>
+                    <button class="language-btn" onclick="switchLanguage('cpp')">C++</button>
+                </div>
+
+                <div id="jsCode" class="code-block" style="display:block;">
+<span class="code-line" id="js-1"><span style="color:#64b5f6;">function</span> quickSort(arr, low, high) {</span>
+<span class="code-line" id="js-2">    <span style="color:#ffd700;">if</span> (low < high) {</span>
+<span class="code-line" id="js-3">        <span style="color:#808080;">// 取得分割點 (Pivot 就位)</span></span>
+<span class="code-line" id="js-4">        <span style="color:#64b5f6;">let</span> pi = partition(arr, low, high);</span>
+<span class="code-line" id="js-5">        </span>
+<span class="code-line" id="js-6">        <span style="color:#808080;">// 遞迴排序左右子陣列</span></span>
+<span class="code-line" id="js-7">        quickSort(arr, low, pi - 1);</span>
+<span class="code-line" id="js-8">        quickSort(arr, pi + 1, high);</span>
+<span class="code-line" id="js-9">    }</span>
+<span class="code-line" id="js-10">}</span>
+<span class="code-line" id="js-11"></span>
+<span class="code-line" id="js-12"><span style="color:#64b5f6;">function</span> partition(arr, low, high) {</span>
+<span class="code-line" id="js-13">    <span style="color:#64b5f6;">let</span> pivot = arr[high]; <span style="color:#808080;">// 選擇最後一個元素作基準</span></span>
+<span class="code-line" id="js-14">    <span style="color:#64b5f6;">let</span> i = low - 1; <span style="color:#808080;">// 較小元素的索引</span></span>
+<span class="code-line" id="js-15"></span>
+<span class="code-line" id="js-16">    <span style="color:#ffd700;">for</span> (<span style="color:#64b5f6;">let</span> j = low; j < high; j++) {</span>
+<span class="code-line" id="js-17">        <span style="color:#ffd700;">if</span> (arr[j] < pivot) {</span>
+<span class="code-line" id="js-18">            i++;</span>
+<span class="code-line" id="js-19">            [arr[i], arr[j]] = [arr[j], arr[i]]; <span style="color:#808080;">// 交換</span></span>
+<span class="code-line" id="js-20">        }</span>
+<span class="code-line" id="js-21">    }</span>
+<span class="code-line" id="js-22">    <span style="color:#808080;">// 將 pivot 放到正確的中間位置</span></span>
+<span class="code-line" id="js-23">    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];</span>
+<span class="code-line" id="js-24">    <span style="color:#ffd700;">return</span> i + 1;</span>
+<span class="code-line" id="js-25">}</span>
+                </div>
+
+                <div id="pyCode" class="code-block" style="display:none;">
+<span class="code-line" id="py-1"><span style="color:#64b5f6;">def</span> quick_sort(arr, low, high):</span>
+<span class="code-line" id="py-2">    <span style="color:#ffd700;">if</span> low < high:</span>
+<span class="code-line" id="py-3">        pi = partition(arr, low, high)</span>
+<span class="code-line" id="py-4">        </span>
+<span class="code-line" id="py-5">        quick_sort(arr, low, pi - 1)</span>
+<span class="code-line" id="py-6">        quick_sort(arr, pi + 1, high)</span>
+<span class="code-line" id="py-7"></span>
+<span class="code-line" id="py-8"><span style="color:#64b5f6;">def</span> partition(arr, low, high):</span>
+<span class="code-line" id="py-9">    pivot = arr[high]</span>
+<span class="code-line" id="py-10">    i = low - 1</span>
+<span class="code-line" id="py-11"></span>
+<span class="code-line" id="py-12">    <span style="color:#ffd700;">for</span> j <span style="color:#ffd700;">in</span> range(low, high):</span>
+<span class="code-line" id="py-13">        <span style="color:#ffd700;">if</span> arr[j] < pivot:</span>
+<span class="code-line" id="py-14">            i += 1</span>
+<span class="code-line" id="py-15">            arr[i], arr[j] = arr[j], arr[i]</span>
+<span class="code-line" id="py-16"></span>
+<span class="code-line" id="py-17">    arr[i + 1], arr[high] = arr[high], arr[i + 1]</span>
+<span class="code-line" id="py-18">    <span style="color:#ffd700;">return</span> i + 1</span>
+                </div>
+
+                <div id="cppCode" class="code-block" style="display:none;">
+<span class="code-line" id="cpp-1"><span style="color:#64b5f6;">void</span> quickSort(vector&lt;<span style="color:#64b5f6;">int</span>&gt;&amp; arr, <span style="color:#64b5f6;">int</span> low, <span style="color:#64b5f6;">int</span> high) {</span>
+<span class="code-line" id="cpp-2">    <span style="color:#ffd700;">if</span> (low < high) {</span>
+<span class="code-line" id="cpp-3">        <span style="color:#64b5f6;">int</span> pi = partition(arr, low, high);</span>
+<span class="code-line" id="cpp-4">        </span>
+<span class="code-line" id="cpp-5">        quickSort(arr, low, pi - 1);</span>
+<span class="code-line" id="cpp-6">        quickSort(arr, pi + 1, high);</span>
+<span class="code-line" id="cpp-7">    }</span>
+<span class="code-line" id="cpp-8">}</span>
+<span class="code-line" id="cpp-9"></span>
+<span class="code-line" id="cpp-10"><span style="color:#64b5f6;">int</span> partition(vector&lt;<span style="color:#64b5f6;">int</span>&gt;&amp; arr, <span style="color:#64b5f6;">int</span> low, <span style="color:#64b5f6;">int</span> high) {</span>
+<span class="code-line" id="cpp-11">    <span style="color:#64b5f6;">int</span> pivot = arr[high];</span>
+<span class="code-line" id="cpp-12">    <span style="color:#64b5f6;">int</span> i = low - 1;</span>
+<span class="code-line" id="cpp-13"></span>
+<span class="code-line" id="cpp-14">    <span style="color:#ffd700;">for</span> (<span style="color:#64b5f6;">int</span> j = low; j < high; j++) {</span>
+<span class="code-line" id="cpp-15">        <span style="color:#ffd700;">if</span> (arr[j] < pivot) {</span>
+<span class="code-line" id="cpp-16">            i++;</span>
+<span class="code-line" id="cpp-17">            swap(arr[i], arr[j]);</span>
+<span class="code-line" id="cpp-18">        }</span>
+<span class="code-line" id="cpp-19">    }</span>
+<span class="code-line" id="cpp-20">    swap(arr[i + 1], arr[high]);</span>
+<span class="code-line" id="cpp-21">    <span style="color:#ffd700;">return</span> i + 1;</span>
+<span class="code-line" id="cpp-22">}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentArray = [];
+        let sortSteps = [];
+        let currentStepIndex = 0;
+        let currentLanguage = 'js';
+
+        // 加入 pivotIndex 標記紫色的基準點
+        class SortStep {
+            constructor(description, title, details, comparingIndices = [], selectedIndex = -1, sortedIndices = [], pivotIndex = -1, highlightLines = [], activeRange = null) {
+                this.description = description;
+                this.title = title;
+                this.details = details;
+                this.comparingIndices = comparingIndices;
+                this.selectedIndex = selectedIndex;  // 通常用來標示發生交換
+                this.sortedIndices = sortedIndices;
+                this.pivotIndex = pivotIndex;        // 紫色 Pivot
+                this.highlightLines = highlightLines;
+                this.activeRange = activeRange;      // 讓當下無關的區塊變暗
+                this.arrayState = [...currentArray];
+            }
+        }
+
+        function parseInput() {
+            const input = document.getElementById('arrayInput').value;
+            if (!input.trim()) {
+                showError('請輸入數值');
+                return null;
+            }
+            try {
+                const arr = input.split(',').map(x => {
+                    const num = parseInt(x.trim());
+                    if (isNaN(num)) throw new Error('包含無效數值');
+                    return num;
+                });
+                if (arr.length > 20) {
+                    showError('陣列長度不能超過 20');
+                    return null;
+                }
+                return arr;
+            } catch (e) {
+                showError('輸入格式錯誤: ' + e.message);
+                return null;
+            }
+        }
+
+        function generateSortSteps() {
+            sortSteps = [];
+            const n = currentArray.length;
+            let sortedIndices = [];
+
+            sortSteps.push(new SortStep(
+                '準備開始快速排序 (Quick Sort)',
+                '✨ 初始化',
+                `陣列: [${currentArray.join(', ')}], 長度 = ${n}`,
+                [], -1, [...sortedIndices], -1, ['js-1', 'py-1', 'cpp-1'], [0, n - 1]
+            ));
+
+            quickSortSimulate(0, n - 1, sortedIndices);
+
+            // 確保所有元素都被標記為 Sorted
+            let allSorted = Array.from({length: n}, (_, i) => i);
+            sortSteps.push(new SortStep(
+                '排序完成！所有的基準點都已確認位置。',
+                '🎉 排序完成',
+                `最終結果: [${currentArray.join(', ')}]`,
+                [], -1, allSorted, -1, [], [0, n - 1]
+            ));
+        }
+
+        function quickSortSimulate(low, high, sortedIndices) {
+            if (low < high) {
+                sortSteps.push(new SortStep(
+                    `開始處理區間 [${low}, ${high}]。將呼叫 Partition 進行分割。`,
+                    '✂️ 進入區間',
+                    `目前的子陣列: [${currentArray.slice(low, high + 1).join(', ')}]`,
+                    [], -1, [...sortedIndices], -1, ['js-2', 'js-4', 'py-2', 'py-3', 'cpp-2', 'cpp-3'], [low, high]
+                ));
+
+                let pi = partitionSimulate(low, high, sortedIndices);
+
+                sortSteps.push(new SortStep(
+                    `基準點 ${currentArray[pi]} (索引 ${pi}) 已就位。準備遞迴處理左右兩側。`,
+                    '🔀 分割完成',
+                    `左側區間: [${low}, ${pi - 1}], 右側區間: [${pi + 1}, ${high}]`,
+                    [], -1, [...sortedIndices], -1, ['js-7', 'js-8', 'py-5', 'py-6', 'cpp-5', 'cpp-6'], [low, high]
+                ));
+
+                quickSortSimulate(low, pi - 1, sortedIndices);
+                quickSortSimulate(pi + 1, high, sortedIndices);
+            } else if (low === high) {
+                // 單一元素自然排序完成
+                if (!sortedIndices.includes(low)) {
+                    sortedIndices.push(low);
+                    sortSteps.push(new SortStep(
+                        `區間只剩下單一元素 ${currentArray[low]} (索引 ${low})，視為已排序。`,
+                        '✅ 元素就位',
+                        ``,
+                        [], -1, [...sortedIndices], -1, [], [low, high]
+                    ));
+                }
+            }
+        }
+
+        function partitionSimulate(low, high, sortedIndices) {
+            let pivot = currentArray[high];
+            let i = low - 1;
+
+            sortSteps.push(new SortStep(
+                `選擇區間最後一個元素 ${pivot} 作為基準點 (Pivot)。`,
+                '📍 選擇 Pivot',
+                `Pivot = ${pivot}。準備將小於 ${pivot} 的值移到左邊。`,
+                [], -1, [...sortedIndices], high, ['js-13', 'py-9', 'cpp-11'], [low, high]
+            ));
+
+            for (let j = low; j < high; j++) {
+                sortSteps.push(new SortStep(
+                    `比較元素 ${currentArray[j]} 和 Pivot (${pivot})`,
+                    '🔍 比較大小',
+                    `條件: ${currentArray[j]} < ${pivot} ? ${currentArray[j] < pivot ? '是，準備交換' : '否，跳過'}`,
+                    [j], -1, [...sortedIndices], high, ['js-16', 'js-17', 'py-12', 'py-13', 'cpp-14', 'cpp-15'], [low, high]
+                ));
+
+                if (currentArray[j] < pivot) {
+                    i++;
+                    sortSteps.push(new SortStep(
+                        `${currentArray[j]} < ${pivot}，將它與索引 i (${i}) 的元素 ${currentArray[i]} 交換。`,
+                        '🔄 發生交換',
+                        `把較小的值往前丟。`,
+                        [i, j], i, [...sortedIndices], high, ['js-18', 'js-19', 'py-14', 'py-15', 'cpp-16', 'cpp-17'], [low, high]
+                    ));
+
+                    [currentArray[i], currentArray[j]] = [currentArray[j], currentArray[i]];
+                }
+            }
+
+            sortSteps.push(new SortStep(
+                `走訪結束。將 Pivot (${pivot}) 移到中間分隔線位置 (索引 ${i + 1})。`,
+                '🎯 Pivot 就位',
+                `與索引 ${i + 1} 的元素 ${currentArray[i + 1]} 交換。`,
+                [i + 1, high], i + 1, [...sortedIndices], high, ['js-23', 'py-17', 'cpp-20'], [low, high]
+            ));
+
+            [currentArray[i + 1], currentArray[high]] = [currentArray[high], currentArray[i + 1]];
+            
+            // Pivot 的最終位置確定了，標記為 Sorted
+            sortedIndices.push(i + 1);
+
+            return i + 1;
+        }
+
+        function startDemo() {
+            const arr = parseInput();
+            if (!arr) return;
+
+            currentArray = [...arr];
+            currentStepIndex = 0;
+            generateSortSteps();
+
+            document.getElementById('stepInfo').style.display = 'block';
+            document.getElementById('stepCounter').style.display = 'block';
+            document.getElementById('prevBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'block';
+            document.getElementById('resultBox').style.display = 'none';
+
+            displayStep(0);
+        }
+
+        function displayStep(index) {
+            if (index < 0 || index >= sortSteps.length) return;
+
+            currentStepIndex = index;
+            const step = sortSteps[index];
+
+            drawBars(step.arrayState, step.comparingIndices, step.selectedIndex, step.sortedIndices, step.pivotIndex, step.activeRange);
+
+            document.getElementById('stepTitle').textContent = step.title;
+            document.getElementById('stepDescription').textContent = step.description;
+            document.getElementById('stepDetails').textContent = step.details;
+
+            document.getElementById('currentStep').textContent = index + 1;
+            document.getElementById('totalSteps').textContent = sortSteps.length;
+
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === sortSteps.length - 1;
+
+            highlightCode(step.highlightLines);
+
+            if (index === sortSteps.length - 1) {
+                document.getElementById('resultBox').classList.remove('error');
+                document.getElementById('resultBox').style.display = 'block';
+                document.getElementById('resultText').textContent = '✅ ' + step.details;
+            } else {
+                document.getElementById('resultBox').style.display = 'none';
+            }
+        }
+
+        function nextStep() {
+            if (currentStepIndex < sortSteps.length - 1) displayStep(currentStepIndex + 1);
+        }
+
+        function previousStep() {
+            if (currentStepIndex > 0) displayStep(currentStepIndex - 1);
+        }
+
+        function drawBars(arr, comparing = [], selected = -1, sorted = [], pivotIndex = -1, activeRange = null) {
+            const visualization = document.getElementById('visualization');
+            visualization.innerHTML = '';
+
+            const max = Math.max(...arr);
+            const min = Math.min(...arr);
+            const range = max - min || 1;
+
+            arr.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                const height = ((value - min + 1) / (range + 1)) * 100;
+                bar.style.height = height + '%';
+                bar.textContent = value;
+
+                // 處理暗化背景
+                if (activeRange && (index < activeRange[0] || index > activeRange[1])) {
+                    bar.classList.add('inactive');
+                } else {
+                    if (sorted.includes(index)) {
+                        bar.classList.add('sorted');
+                    } else if (index === pivotIndex) {
+                        bar.classList.add('pivot');  // 紫色 Pivot 特效
+                    } else if (index === selected) {
+                        bar.classList.add('selected');
+                    } else if (comparing.includes(index)) {
+                        bar.classList.add('comparing');
+                    }
+                }
+
+                visualization.appendChild(bar);
+            });
+        }
+
+        function highlightCode(lineIds) {
+            document.querySelectorAll('.code-line').forEach(line => line.classList.remove('highlight'));
+            lineIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.classList.add('highlight');
+            });
+        }
+
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            document.querySelectorAll('.language-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('jsCode').style.display = lang === 'js' ? 'block' : 'none';
+            document.getElementById('pyCode').style.display = lang === 'py' ? 'block' : 'none';
+            document.getElementById('cppCode').style.display = lang === 'cpp' ? 'block' : 'none';
+
+            if (sortSteps.length > 0 && currentStepIndex < sortSteps.length) {
+                highlightCode(sortSteps[currentStepIndex].highlightLines);
+            }
+        }
+
+        function showError(message) {
+            const resultBox = document.getElementById('resultBox');
+            resultBox.classList.add('error');
+            resultBox.style.display = 'block';
+            document.getElementById('resultText').textContent = '❌ ' + message;
+        }
+
+        function resetDemo() {
+            document.getElementById('arrayInput').value = '8,3,1,7,0,10,2';
+            currentArray = [];
+            sortSteps = [];
+            currentStepIndex = 0;
+            document.getElementById('stepInfo').style.display = 'none';
+            document.getElementById('stepCounter').style.display = 'none';
+            document.getElementById('prevBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('resultBox').style.display = 'none';
+            document.getElementById('visualization').innerHTML = '';
+            document.querySelectorAll('.code-line').forEach(line => line.classList.remove('highlight'));
+        }
+
+        window.addEventListener('DOMContentLoaded', () => resetDemo());
+    </script>
+</body>
+</html>
